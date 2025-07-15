@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Million Reasons to Stay</title>
+    <style>
+        /* === RESET & BASE STYLES === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #171717;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === LAYOUT === */
+        .main-content {
+            flex: 2;
+            min-height: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .messages-wrapper {
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* === HEADER === */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+
+        /* === BUTTONS === */
+        .btn {
+            background: #171717;
+            color: white;
+            padding: 15px 30px;
+            border: 3px solid #8A2BE2;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: #8A2BE2;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+        }
+
+        .btn-pink {
+            border-color: #FF1493;
+        }
+
+        .btn-pink:hover {
+            background: #FF1493;
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.6);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* === SEARCH SECTION === */
+        .search-container {
+            background: transparent;
+            padding: 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .search-container.collapsed {
+            padding: 1px;
+            text-align: center;
+        }
+
+        .search-container.expanded {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 5px;
+            background: #171717;
+        }
+
+        .search-content {
+            display: none;
+            flex: 1;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-content.visible {
+            display: flex;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #666;
+            border-radius: 25px;
+            background: #171717;
+            color: white;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #8A2BE2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        .search-results-info {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 10px;
+            font-size: 1.1em;
+            color: #8A2BE2;
+        }
+
+        .search-highlight {
+            background: rgba(255, 255, 0, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* === MESSAGE FORM === */
+        .message-form {
+            background: #171717;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .message-form.collapsed {
+            border: none;
+        }
+
+        .message-form.expanded {
+            padding: 30px;
+            border: 3px solid #8A2BE2;
+        }
+
+        .form-toggle-btn {
+            display: block;
+            margin: 0 auto;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .form-content {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .form-content.visible {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #666;
+            border-radius: 10px;
+            background: #171717;
+            color: white;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #8A2BE2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* === MESSAGES GRID === */
+        .messages-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .message-card {
+            background: #171717;
+            border-radius: 25px;
+            padding: 30px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            border: 4px solid;
+        }
+
+        .message-card::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 10px;
+            right: 10px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 25px;
+            filter: blur(4px);
+            z-index: -1;
+        }
+
+        .message-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .message-card:hover::after {
+            bottom: -20px;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            filter: blur(6px);
+        }
+
+        .message-card.highlighted {
+            animation: highlight 2s ease-in-out;
+        }
+
+        .message-text {
+            font-size: 1.2em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        /* === STATES === */
+        .empty-state, .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.6;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state p, .loading p {
+            font-size: 1.0em;
+            margin-bottom: 20px;
+        }
+
+        .moon-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* === FOOTER === */
+        .footer {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .heart {
+            color: #FF1493;
+            font-size: 1em;
+            margin: 0 3px;
+            animation: pulse 2s infinite;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes highlight {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.4); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 1400px) {
+            .messages-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .messages-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .messages-wrapper {
+                padding: 0;
+            }
+
+            .search-container.collapsed .btn {
+                max-width: 200px;
+                padding: 12px 20px;
+            }
+
+            .search-container.expanded {
+                flex-direction: column;
+                gap: 10px;
+                padding: 20px;
+                background: #171717;
+                border: 3px solid #8A2BE2;
+            }
+
+            .search-content {
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-input, .btn {
+                width: 100%;
+            }
+
+            .messages-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-top: 20px;
+            }
+            
+            .message-card {
+                min-height: 120px;
+                padding: 20px;
+                margin: 0;
+            }
+            
+            .message-text {
+                font-size: 1.2em;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>A Million Reasons to Stay</h1>
+                <p>We're so glad you're here</p>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-container collapsed" id="searchContainer">
+                <button type="button" class="btn" id="searchToggle">Search</button>
+                <div class="search-content" id="searchContent">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search messages, authors, or locations...">
+                    <button type="button" class="btn" id="searchBtn">Search</button>
+                    <button type="button" class="btn btn-pink" id="clearSearchBtn">Clear</button>
+                </div>
+            </div>
+
+            <div class="search-results-info" id="searchResultsInfo" style="display: none;"></div>
+
+            <!-- Message Form -->
+            <div class="message-form collapsed" id="messageFormContainer">
+                <button type="button" class="btn form-toggle-btn" id="formToggle">Share Your Reason</button>
+                <div class="form-content" id="formContent">
+                    <form id="messageForm">
+                        <div class="form-group">
+                            <label for="messageText">Your Message:</label>
+                            <textarea id="messageText" placeholder="What's your reason?" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="authorName">Your Name:</label>
+                            <input type="text" id="authorName" placeholder="Any name will do!" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location:</label>
+                            <input type="text" id="location" placeholder="Nothing too specific!" required>
+                        </div>
+                        <button type="submit" class="btn">Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Grid -->
+        <div class="messages-wrapper">
+            <div class="messages-container" id="messagesContainer">
+                <div class="loading">
+                    <div class="moon-icon">🌙</div>
+                    <p>Loading messages...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><a href="https://www.instagram.com/tristinpeary/" style="color: #808080; text-decoration: none;" target="_blank">made with <span class="heart">♥</span> love</a></p>
+    </footer>
+
+    <script>
+        // ===== GLOBAL VARIABLES =====
+        let messages = [];
+        let allMessages = [];
+        let currentSearchTerm = '';
+        let searchTimeout;
+
+        // Color palette for message cards
+        const colors = [
+            '#8A2BE2', '#FF1493', '#00CED1', '#FF6347', '#32CD32', '#FF69B4',
+            '#00BFFF', '#FF4500', '#9370DB', '#20B2AA', '#FF8C00', '#DA70D6',
+            '#00FF7F', '#FF0000', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'
+        ];
+
+        // ===== UTILITY FUNCTIONS =====
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function formatTime(date) {
+            return new Date(date).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function highlightSearchTerm(text, searchTerm) {
+            if (!searchTerm) return escapeHtml(text);
+            
+            const escaped = escapeHtml(text);
+            const regex = new RegExp(`(${escapeHtml(searchTerm).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return escaped.replace(regex, '<span class="search-highlight">$1</span>');
+        }
+
+        // ===== MESSAGE RENDERING =====
+        function renderMessages() {
+            const container = document.getElementById('messagesContainer');
+            
+            if (messages.length === 0) {
+                container.innerHTML = currentSearchTerm ? 
+                    createEmptySearchState() : createEmptyState();
+                return;
+            }
+
+            container.innerHTML = messages.map(message => `
+                <div class="message-card" style="border-color: ${message.color};">
+                    <div class="message-text">${highlightSearchTerm(message.text, currentSearchTerm)}</div>
+                    <div class="message-footer">
+                        <span class="message-author">${highlightSearchTerm(message.author, currentSearchTerm)}</span>
+                        <span class="message-location">${highlightSearchTerm(message.location, currentSearchTerm)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function createEmptyState() {
+            return `
+                <div class="empty-state">
+                    <div class="moon-icon">🌙</div>
+                    <p>No messages yet...</p>
+                    <p>Be the first!</p>
+                </div>
+            `;
+        }
+
+        function createEmptySearchState() {
+            return `
+                <div class="empty-state">
+                    <div class="moon-icon">🔍</div>
+                    <p>No messages found for "${currentSearchTerm}"</p>
+                    <p>Try a different search term!</p>
+                </div>
+            `;
+        }
+
+        // ===== API FUNCTIONS =====
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/messages');
+                if (response.ok) {
+                    allMessages = await response.json();
+                    messages = allMessages;
+                    renderMessages();
+                    updateSearchResults();
+                } else {
+                    console.error('Failed to load messages');
+                    showError('Failed to load messages');
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                showError('Error loading messages');
+            }
+        }
+
+        async function addMessage(text, author, location) {
+            const message = {
+                text: text,
+                author: author,
+                location: location,
+                color: getRandomColor()
+            };
+            
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(message)
+                });
+                
+                if (response.ok) {
+                    const savedMessage = await response.json();
+                    allMessages.unshift(savedMessage);
+                    filterMessages();
+                    renderMessages();
+                    updateSearchResults();
+                    return true;
+                } else {
+                    const errorData = await response.json();
+                    showError(errorData.error || 'Failed to save message');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error saving message:', error);
+                showError('Error saving message');
+                return false;
+            }
+        }
+
+        // ===== SEARCH FUNCTIONS =====
+        function performSearch(searchTerm) {
+            currentSearchTerm = searchTerm.toLowerCase();
+            filterMessages();
+            renderMessages();
+            updateSearchResults();
+        }
+
+        function filterMessages() {
+            if (!currentSearchTerm) {
+                messages = allMessages;
+            } else {
+                messages = allMessages.filter(message => 
+                    message.text.toLowerCase().includes(currentSearchTerm) ||
+                    message.author.toLowerCase().includes(currentSearchTerm) ||
+                    message.location.toLowerCase().includes(currentSearchTerm)
+                );
+            }
+        }
+
+        function updateSearchResults() {
+            const searchResultsInfo = document.getElementById('searchResultsInfo');
+            
+            if (currentSearchTerm) {
+                const totalMessages = allMessages.length;
+                const foundMessages = messages.length;
+                searchResultsInfo.textContent = `Found ${foundMessages} of ${totalMessages} messages for "${currentSearchTerm}"`;
+                searchResultsInfo.style.display = 'block';
+            } else {
+                searchResultsInfo.style.display = 'none';
+            }
+        }
+
+        function clearSearch() {
+            currentSearchTerm = '';
+            document.getElementById('searchInput').value = '';
+            filterMessages();
+            renderMessages();
+            updateSearchResults();
+        }
+
+        // ===== UI FEEDBACK =====
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            const bgColor = type === 'success' ? '#27ae60' : '#ff4444';
+            
+            notification.style.cssText = `
+                background: ${bgColor};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                text-align: center;
+                font-weight: bold;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            const messageForm = document.querySelector('.message-form');
+            messageForm.parentNode.insertBefore(notification, messageForm);
+            
+            const timeout = type === 'success' ? 3000 : 5000;
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, timeout);
+        }
+
+        function showError(message) {
+            showNotification(message, 'error');
+        }
+
+        function showSuccess(message) {
+            showNotification(message, 'success');
+        }
+
+        // ===== FORM HANDLING =====
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const messageText = document.getElementById('messageText').value.trim();
+            const authorName = document.getElementById('authorName').value.trim();
+            const location = document.getElementById('location').value.trim();
+            
+            if (messageText && authorName && location) {
+                submitMessage(messageText, authorName, location);
+            }
+        }
+
+        async function submitMessage(messageText, authorName, location) {
+            const submitBtn = document.querySelector('.btn[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.textContent = 'Posting...';
+            submitBtn.disabled = true;
+            
+            const success = await addMessage(messageText, authorName, location);
+            
+            if (success) {
+                clearForm();
+                showSuccessState(submitBtn, originalText);
+                showSuccess('Message posted successfully!');
+            } else {
+                resetButton(submitBtn, originalText);
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('messageText').value = '';
+            document.getElementById('authorName').value = '';
+            document.getElementById('location').value = '';
+        }
+
+        function showSuccessState(submitBtn, originalText) {
+            submitBtn.textContent = 'Posted!';
+            submitBtn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.classList.remove('btn-success');
+                submitBtn.disabled = false;
+            }, 1500);
+        }
+
+        function resetButton(submitBtn, originalText) {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+
+        // ===== TOGGLE HANDLERS =====
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            const searchContent = document.getElementById('searchContent');
+            const searchToggle = document.getElementById('searchToggle');
+            
+            if (searchContainer.classList.contains('collapsed')) {
+                searchContainer.classList.remove('collapsed');
+                searchContainer.classList.add('expanded');
+                searchContent.classList.add('visible');
+                document.getElementById('searchInput').focus();
+                searchToggle.textContent = 'Hide';
+            } else {
+                searchContainer.classList.remove('expanded');
+                searchContainer.classList.add('collapsed');
+                searchContent.classList.remove('visible');
+                searchToggle.textContent = 'Search';
+            }
+        }
+
+        function toggleForm() {
+            const messageFormContainer = document.getElementById('messageFormContainer');
+            const formContent = document.getElementById('formContent');
+            const formToggle = document.getElementById('formToggle');
+            
+            if (messageFormContainer.classList.contains('collapsed')) {
+                messageFormContainer.classList.remove('collapsed');
+                messageFormContainer.classList.add('expanded');
+                formContent.classList.add('visible');
+                document.getElementById('messageText').focus();
+                formToggle.textContent = 'Hide';
+            } else {
+                messageFormContainer.classList.remove('expanded');
+                messageFormContainer.classList.add('collapsed');
+                formContent.classList.remove('visible');
+                formToggle.textContent = 'Share Your Reason';
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Form submission
+            document.getElementById('messageForm').addEventListener('submit', handleFormSubmit);
+            
+            // Toggle buttons
+            document.getElementById('searchToggle').addEventListener('click', toggleSearch);
+            document.getElementById('formToggle').addEventListener('click', toggleForm);
+            
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', () => {
+                const searchTerm = document.getElementById('searchInput').value.trim();
+                performSearch(searchTerm);
+            });
+            
+            document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
+            
+            // Search on Enter key
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const searchTerm = e.target.value.trim();
+                    performSearch(searchTerm);
+                }
+            });
+            
+            // Real-time search with debounce
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = e.target.value.trim();
+                    performSearch(searchTerm);
+                }, 300);
+            });
+        }
+
+        // ===== INITIALIZATION =====
+        function initialize() {
+            setupEventListeners();
+            loadMessages();
+            
+            // Auto-refresh messages every 10 seconds
+            setInterval(loadMessages, 10000);
+        }
+
+        // Start the application
+        window.addEventListener('load', initialize);
+    </script>
+</body>
+</html>

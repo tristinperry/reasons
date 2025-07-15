@@ -1,0 +1,32 @@
+{
+  "name": "reasons",
+  "version": "1.0.0",
+  "description": "A message board with server-side storage",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "greenlock-express": "^4.0.3",
+    "mongoose": "^7.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tristinperry/reasons.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tristinperry/reasons/issues"
+  },
+  "homepage": "https://github.com/tristinperry/reasons#readme"
+}
